@@ -168,6 +168,48 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .sh-price b{font-size:28px;font-weight:800;letter-spacing:-.03em}
 .sh-price b small{font-size:15px;color:var(--muted);font-weight:600}
 
+/* ---------- вкладка «Инфо» ---------- */
+.brand-head{text-align:center;padding:18px 0 6px}
+.brand-ava{width:104px;height:104px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 50% 30%,#3a3a40 0%,#232327 70%);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.brand-ava svg{width:58px;height:58px;overflow:visible}
+.brand-ava .cart{animation:i-cart 3.2s ease-in-out infinite}
+.brand-ava .wheels circle{transform-box:fill-box;transform-origin:center;animation:i-wheel 3.2s ease-in-out infinite}
+@keyframes i-cart{0%,100%{transform:translateX(0) rotate(0)}30%{transform:translateX(4px) rotate(-3deg)}60%{transform:translateX(-3px) rotate(2deg)}}
+@keyframes i-wheel{0%,100%{transform:scaleY(1)}30%,60%{transform:scaleY(.82)}}
+.brand-head h1{font-size:34px;font-weight:800;letter-spacing:-.035em;line-height:1}
+.brand-head p{margin-top:8px;color:var(--muted);font-size:14.5px}
+.brand-head p b{color:var(--text);font-weight:700}
+
+.how{position:relative;background:var(--card);border:1px solid rgba(255,255,255,.045);border-radius:var(--radius);padding:8px 18px}
+.how::before{content:"";position:absolute;left:35px;top:34px;bottom:34px;border-left:2px dashed rgba(255,255,255,.1)}
+.how-step{position:relative;display:flex;align-items:center;gap:14px;padding:14px 0}
+.how-step + .how-step{border-top:1px solid rgba(255,255,255,.05)}
+.how-n{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--text);color:#0a0a0a;font-weight:800;font-size:15px;box-shadow:0 0 0 5px var(--card)}
+.how-t{flex:1;min-width:0}
+.how-t b{display:block;font-size:15.5px;font-weight:700}
+.how-t span{display:block;margin-top:2px;color:var(--muted);font-size:13px;line-height:1.35}
+.how-i{flex:none;width:22px;height:22px;color:var(--dim)}
+
+.socials{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:22px}
+.soc{display:flex;flex-direction:column;align-items:center;gap:9px;font-size:13.5px;font-weight:600;color:var(--muted);padding:4px 0;transition:transform .15s}
+.soc:active{transform:scale(.94)}
+.soc-c{width:68px;height:68px;border-radius:50%;background:var(--card);border:1px solid rgba(255,255,255,.05);display:grid;place-items:center}
+.soc-c svg{width:40px;height:40px;overflow:visible}
+.soc-c svg *{transform-box:fill-box;transform-origin:center}
+.s-tg{animation:i-bob 3s ease-in-out infinite}
+.s-tg .plane{animation:i-plane 3s ease-in-out infinite}
+@keyframes i-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes i-plane{0%,100%{transform:translate(0,0) rotate(0)}40%{transform:translate(2px,-2px) rotate(-8deg)}60%{transform:translate(1px,-1px) rotate(-4deg)}}
+.s-yt{animation:i-beat 1.8s ease-in-out infinite}
+@keyframes i-beat{0%,100%{transform:scale(1)}12%{transform:scale(1.1)}24%{transform:scale(.97)}36%{transform:scale(1.06)}50%{transform:scale(1)}}
+.s-sup{animation:i-tilt 4s ease-in-out infinite}
+.s-sup .d1,.s-sup .d2,.s-sup .d3{animation:i-type 1.2s ease-in-out infinite}
+.s-sup .d2{animation-delay:.15s}.s-sup .d3{animation-delay:.3s}
+@keyframes i-type{0%,60%,100%{transform:translateY(0);opacity:.55}30%{transform:translateY(-3px);opacity:1}}
+@keyframes i-tilt{0%,100%{transform:rotate(0)}50%{transform:rotate(-5deg)}}
+@media (prefers-reduced-motion:reduce){.brand-ava *, .soc-c svg, .soc-c svg *{animation:none!important}}
+
 /* ---------- страница товара ---------- */
 .pp-back{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px 0 10px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--muted);margin:2px 0 12px}
 .pp-back svg{width:18px;height:18px}
@@ -250,18 +292,44 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ===== Инфо ===== -->
   <section class="view" id="v-info">
-    <h1 class="page-h">Как купить</h1>
-    <div class="panel">
-      <div class="steps">
-        <div class="step"><b>1</b><div>Выбери товар<small>Открой карточку и посмотри, что входит</small></div></div>
-        <div class="step"><b>2</b><div>Оплати<small>Оплата прямо в Telegram</small></div></div>
-        <div class="step"><b>3</b><div>Получи доступ<small>Ссылка или подключение придут в чат с ботом</small></div></div>
+    <div class="brand-head">
+      <div class="brand-ava"><svg class="cart" viewBox="0 0 48 48" fill="none" stroke="#b9b9c0" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h6l5 22h21l4-15H14"/><path d="M19 22h20M18 26h19" stroke-width="2.2" opacity=".55"/><g class="wheels"><circle cx="19" cy="38" r="3"/><circle cx="34" cy="38" r="3"/></g></svg></div>
+      <h1>ERA Shop</h1>
+      <p>магазин блогера · <b>@eradiat_shop_bot</b></p>
+    </div>
+
+    <div class="sec">Как купить</div>
+    <div class="how">
+      <div class="how-step">
+        <div class="how-n">1</div>
+        <div class="how-t"><b>Выбери товар</b><span>Открой карточку и посмотри, что входит</span></div>
+        <svg class="how-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12H6.2L5 8Z"/><path d="M9 8V7a3 3 0 0 1 6 0v1"/></svg>
+      </div>
+      <div class="how-step">
+        <div class="how-n">2</div>
+        <div class="how-t"><b>Оплати</b><span>Оплата прямо в Telegram</span></div>
+        <svg class="how-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10.5h18M7 15h3"/></svg>
+      </div>
+      <div class="how-step">
+        <div class="how-n">3</div>
+        <div class="how-t"><b>Получи доступ</b><span>Ссылка или подключение придут в чат с ботом</span></div>
+        <svg class="how-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8M16 7l2.5 2.5M14 9l2 2"/></svg>
       </div>
     </div>
-    <div class="panel">
-      <h3>Остались вопросы?</h3>
-      <p style="margin-bottom:14px">Напиши мне напрямую — отвечу лично.</p>
-      <button class="btn ghost" data-act="support">Написать в поддержку</button>
+
+    <div class="socials">
+      <button class="soc" data-link="channel">
+        <span class="soc-c"><svg class="s-tg" viewBox="0 0 48 48"><defs><linearGradient id="tgg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fbdf2"/><stop offset="1" stop-color="#1f8fd6"/></linearGradient></defs><circle cx="24" cy="24" r="20" fill="url(#tgg)"/><path class="plane" fill="#fff" d="M34.6 14.2 11.9 23c-1.2.5-1.2 1.4 0 1.8l5.6 1.8 2.2 6.6c.3.8 1.1 1 1.7.4l3.1-2.9 5.9 4.3c.8.5 1.6.2 1.8-.8l3.9-18.2c.3-1.4-.5-2-1.5-1.8Zm-14.3 12.5 10.3-7.6-8 8.6-.3 3.4-2-4.4Z"/></svg></span>
+        Канал
+      </button>
+      <button class="soc" data-link="youtube">
+        <span class="soc-c"><svg class="s-yt" viewBox="0 0 48 48"><rect x="5" y="11" width="38" height="26" rx="8" fill="#ff1f3d"/><rect x="5" y="11" width="38" height="13" rx="8" fill="#fff" opacity=".12"/><path class="play" fill="#fff" d="M20.5 18.2v11.6c0 .8.9 1.3 1.6.9l9.3-5.8c.6-.4.6-1.3 0-1.7l-9.3-5.8c-.7-.4-1.6.1-1.6.8Z"/></svg></span>
+        YouTube
+      </button>
+      <button class="soc" data-act="support">
+        <span class="soc-c"><svg class="s-sup" viewBox="0 0 48 48"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b57bff"/><stop offset="1" stop-color="#ff5fa8"/></linearGradient></defs><path fill="url(#spg)" d="M24 7c-10 0-18 6.9-18 15.5 0 4.9 2.6 9.2 6.7 12.1L11 41l7.4-3.7c1.8.5 3.7.7 5.6.7 10 0 18-6.9 18-15.5S34 7 24 7Z"/><g fill="#fff"><circle class="d1" cx="16.5" cy="22.5" r="2.6"/><circle class="d2" cx="24" cy="22.5" r="2.6"/><circle class="d3" cx="31.5" cy="22.5" r="2.6"/></g></svg></span>
+        Поддержка
+      </button>
     </div>
   </section>
 
@@ -303,6 +371,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 /* ====== НАСТРОЙКИ — сюда вставим ссылки и юзернейм ====== */
 const CONFIG = {
   support: 'era_mgr',     // юзернейм поддержки без @
+  channel: 'https://t.me/+EmS5Q9DgkwI3NGQ6',
+  youtube: 'https://www.youtube.com/@eradiattx',
 };
 
 const CATS = [
@@ -598,6 +668,8 @@ document.addEventListener('click', e => {
   const g = e.target.closest('[data-go]'); if (g){ tap('soft'); go(g.dataset.go); }
   const a = e.target.closest('[data-act="support"]');
   if (e.target.closest('[data-act="back"]')) leaveProduct();
+  const l = e.target.closest('[data-link]');
+  if (l){ tap(); openLink(CONFIG[l.dataset.link]); }
   if (a){ tap(); CONFIG.support ? openLink('https://t.me/' + CONFIG.support) : toast('Контакт поддержки скоро появится'); }
 });
 
