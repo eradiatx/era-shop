@@ -600,6 +600,12 @@ renderChips(); renderGrid();
 const startId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || location.hash.slice(1);
 const startP = PRODUCTS.find(p => p.id === startId && p.page);
 if (startP) openProduct(startP, false);
+// кнопки бота: #profile, #orders, #info — нужная вкладка; #catalog — сразу к товарам
+else if (['profile','orders','info'].includes(startId)) go(startId);
+else if (startId === 'catalog'){
+  history.scrollRestoration = 'manual';
+  setTimeout(() => window.scrollTo(0, $('#chips').getBoundingClientRect().top + window.scrollY), 300);
+}
 </script>
 </body>
 </html>
