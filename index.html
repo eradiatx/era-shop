@@ -216,6 +216,75 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 @keyframes i-tilt{0%,100%{transform:rotate(0)}50%{transform:rotate(-5deg)}}
 @media (prefers-reduced-motion:reduce){.brand-ava *, .soc-c svg, .soc-c svg *{animation:none!important}}
 
+/* ---------- «Покупки» и «Профиль» в стиле «Инфо» ---------- */
+.brand-ava img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.prof-ava{font-size:40px;font-weight:800;color:#d8d8de;overflow:hidden;box-shadow:0 0 0 4px #09090b,0 0 0 6px rgba(255,255,255,.1)}
+.bag-a{animation:i-hop 2.4s cubic-bezier(.3,0,.3,1) infinite}
+.bag-a .spark{transform-box:fill-box;transform-origin:center;animation:i-spark 2.4s ease-in-out infinite}
+.bag-a .spark.s2{animation-delay:.6s}.bag-a .spark.s3{animation-delay:1.2s}
+@keyframes i-hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-6px)}55%{transform:translateY(0) scaleY(.95)}65%{transform:scaleY(1)}}
+@keyframes i-spark{0%,100%{transform:scale(0);opacity:0}40%{transform:scale(1);opacity:1}70%{transform:scale(.6);opacity:0}}
+.empty-card{text-align:center;padding:26px 20px}
+.empty-card::before{display:none}
+.empty-card b{display:block;font-size:17px}
+.empty-card span{display:block;margin-top:6px;color:var(--muted);font-size:14px;line-height:1.4}
+.empty-card .btn{margin-top:18px}
+.ilist{background:var(--card);border:1px solid rgba(255,255,255,.045);border-radius:var(--radius);padding:4px 18px}
+.irow{display:flex;align-items:center;gap:14px;padding:14px 0;width:100%;text-align:left}
+.irow + .irow{border-top:1px solid rgba(255,255,255,.05)}
+.irow svg{flex:none;width:34px;height:34px}
+.irow .k{flex:1;font-size:15px;font-weight:600}
+.irow .v{color:var(--muted);font-size:15px;font-weight:600}
+.irow .v small{display:block;text-align:right;font-size:11px;color:var(--dim);font-weight:500}
+.socials.two{grid-template-columns:repeat(2,1fr)}
+.s-bag{animation:i-hop 2.4s cubic-bezier(.3,0,.3,1) infinite}
+
+/* ---------- богатая страница товара (Gemini) ---------- */
+.gp-head{display:flex;align-items:center;gap:14px;margin:6px 2px 6px}
+.gp-head .ico{width:60px;height:60px}
+.gp-head .ico svg{width:52px;height:52px}
+.gp-title{font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1.15}
+.gp-price{display:flex;align-items:center;gap:10px;margin:14px 4px 18px;font-size:34px;font-weight:800;letter-spacing:-.03em}
+.gp-price small{font-size:18px;font-weight:700;color:var(--muted)}
+.stock{font-size:12px;font-weight:700;letter-spacing:.02em;padding:6px 11px;border-radius:99px;background:rgba(255,92,92,.12);color:#ff7b7b}
+.note{display:flex;gap:14px;background:var(--card);border:1px solid rgba(255,255,255,.045);border-radius:var(--radius);padding:16px 16px 16px 14px;margin-bottom:10px}
+.note > svg{flex:none;width:42px;height:42px;overflow:visible}
+.note > svg *{transform-box:fill-box;transform-origin:center}
+.note-b{flex:1;min-width:0}
+.note-b b{display:block;font-size:16px;margin:2px 0 8px}
+.note-b p{color:rgba(255,255,255,.78);font-size:14.5px;line-height:1.5}
+.note-b ul{list-style:none;display:grid;gap:7px}
+.note-b li{position:relative;padding-left:16px;color:rgba(255,255,255,.82);font-size:14.5px;line-height:1.45}
+.note-b li::before{content:"";position:absolute;left:2px;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--dot,#8b8b93)}
+.chipset{display:flex;flex-wrap:wrap;gap:6px}
+.chipset span{font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:99px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.88)}
+.mini-steps{display:grid;gap:9px}
+.mini-steps div{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.4;color:rgba(255,255,255,.85)}
+.mini-steps i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--text);color:#0a0a0a;font-style:normal;font-size:12px;font-weight:800;display:grid;place-items:center;margin-top:-1px}
+.okline{margin-top:10px;font-size:13.5px;color:#7fe0a8;font-weight:600}
+.n-orb{animation:i-bob 3.2s ease-in-out infinite}
+.n-orb .ring{animation:i-ring 5s linear infinite}
+.n-orb .core{animation:i-hue 6s ease-in-out infinite}
+@keyframes i-ring{to{transform:rotate(360deg)}}
+@keyframes i-hue{0%,100%{filter:hue-rotate(0)}50%{filter:hue-rotate(50deg)}}
+.n-key{animation:i-turn 2.8s ease-in-out infinite}
+@keyframes i-turn{0%,100%{transform:rotate(0)}30%{transform:rotate(-18deg)}60%{transform:rotate(12deg)}}
+.n-warn{animation:i-beat 1.8s ease-in-out infinite}
+.n-warn .bang{animation:i-dot 1.8s ease-in-out infinite}
+.n-cam{animation:i-bob 3s ease-in-out infinite}
+.n-cam .rec{animation:i-dot 1.2s steps(2,end) infinite}
+.bb-oos{display:none;flex:1;gap:10px;align-items:center}
+.buybar.oos .bb-oos{display:flex}
+.buybar.oos .bb-sale{display:none}
+.bb-sale{display:flex;flex:1;align-items:center;gap:16px}
+.bb-notify{flex:1;height:54px;display:flex;align-items:center;justify-content:center;gap:9px}
+.bb-notify svg{width:20px;height:20px}
+.bb-notify svg{animation:i-ring-bell 2.6s ease-in-out infinite;transform-origin:50% 10%}
+@keyframes i-ring-bell{0%,60%,100%{transform:rotate(0)}66%{transform:rotate(14deg)}72%{transform:rotate(-12deg)}78%{transform:rotate(8deg)}84%{transform:rotate(-4deg)}}
+.bb-tg{flex:none;width:54px;height:54px;border-radius:50%;background:var(--card-2);border:1px solid var(--line);display:grid;place-items:center}
+.bb-tg svg{width:24px;height:24px}
+@media (prefers-reduced-motion:reduce){.note svg, .note svg *, .bag-a, .bag-a *, .bb-notify svg{animation:none!important}}
+
 /* ---------- страница товара ---------- */
 .pp-back{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px 0 10px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--muted);margin:2px 0 12px}
 .pp-back svg{width:18px;height:18px}
@@ -287,12 +356,16 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ===== Покупки ===== -->
   <section class="view" id="v-orders">
-    <h1 class="page-h">Покупки</h1>
-    <div class="empty">
-      <div class="big"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg></div>
-      <h3>Пока пусто</h3>
-      <p>Здесь появятся твои заказы и доступы</p>
-      <button class="btn" data-go="shop" style="max-width:240px">В магазин</button>
+    <div class="brand-head">
+      <div class="brand-ava"><svg class="bag-a" viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h28l-2.4 21.2A4 4 0 0 1 31.6 42H16.4a4 4 0 0 1-4-3.8L10 17Z" fill="#b9b9c0" opacity=".95"/><path d="M17 17v-3a7 7 0 0 1 14 0v3" stroke="#b9b9c0" stroke-width="3.2"/><path d="m19 29 3.5 3.5L29 26" stroke="#232327" stroke-width="3.2"/><path class="spark" d="M40 7v6M37 10h6" stroke="#ffd36b" stroke-width="2.4"/><path class="spark s2" d="M7 11v5M4.5 13.5h5" stroke="#7cc4ff" stroke-width="2.2"/><path class="spark s3" d="M42 24v4M40 26h4" stroke="#ff7aa8" stroke-width="2"/></svg></div>
+      <h1>Покупки</h1>
+      <p>твои заказы и доступы</p>
+    </div>
+    <div class="sec">История</div>
+    <div class="how empty-card">
+      <b>Пока пусто</b>
+      <span>Как только оформишь заказ, ссылка или доступ появятся здесь и придут в чат с ботом</span>
+      <button class="btn" data-go="shop">Перейти в магазин</button>
     </div>
   </section>
 
@@ -341,16 +414,36 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
   <!-- ===== Профиль ===== -->
   <section class="view" id="v-profile">
-    <h1 class="page-h">Профиль</h1>
-    <div class="panel prof">
-      <div class="ava" id="ava-big"></div>
-      <div><h3 id="p-name">Гость</h3><p id="p-user">открой через Telegram</p></div>
+    <div class="brand-head">
+      <div class="brand-ava prof-ava" id="ava-big"></div>
+      <h1 id="p-name">Гость</h1>
+      <p id="p-user">открой через Telegram</p>
     </div>
-    <div class="panel">
-      <div class="row">Покупок<span>0</span></div>
-      <div class="row">ID<span id="p-id">—</span></div>
+    <div class="sec">Мой профиль</div>
+    <div class="ilist">
+      <button class="irow" data-act="copy-id">
+        <svg viewBox="0 0 34 34"><rect width="34" height="34" rx="11" fill="#2b6cff" opacity=".16"/><g fill="none" stroke="#5c9bff" stroke-width="2" stroke-linecap="round"><path d="M10 13v-1.5A2.5 2.5 0 0 1 12.5 9H14M20 9h1.5A2.5 2.5 0 0 1 24 11.5V13M24 21v1.5a2.5 2.5 0 0 1-2.5 2.5H20M14 25h-1.5A2.5 2.5 0 0 1 10 22.5V21"/><path d="M14 14.5v1.5M20 14.5v1.5M17 14.5v3.5h-1M14.5 20.5c1.4 1 3.6 1 5 0"/></g></svg>
+        <span class="k">ID</span><span class="v"><span id="p-id">—</span><small>нажми, чтобы скопировать</small></span>
+      </button>
+      <div class="irow">
+        <svg viewBox="0 0 34 34"><rect width="34" height="34" rx="11" fill="#ff8a3d" opacity=".16"/><g fill="none" stroke="#ff9d5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13h14l-1.1 10.1A2 2 0 0 1 20.9 25h-7.8a2 2 0 0 1-2-1.9L10 13Z"/><path d="M14 13v-1a3 3 0 0 1 6 0v1"/></g></svg>
+        <span class="k">Покупок</span><span class="v" id="p-orders">0</span>
+      </div>
+      <div class="irow">
+        <svg viewBox="0 0 34 34"><rect width="34" height="34" rx="11" fill="#2fd47a" opacity=".16"/><g fill="none" stroke="#4fe08f" stroke-width="2" stroke-linecap="round"><circle cx="17" cy="17" r="7.5"/><path d="M15 13.5h3a2 2 0 0 1 0 4h-3v-4ZM15 17.5v4M13.5 19.5h4"/></g></svg>
+        <span class="k">Потрачено</span><span class="v" id="p-spent">0 ₽</span>
+      </div>
     </div>
-    <button class="btn ghost" data-act="support">Поддержка</button>
+    <div class="socials two">
+      <button class="soc" data-go="orders">
+        <span class="soc-c"><svg class="s-bag" viewBox="0 0 48 48"><defs><linearGradient id="bgg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb04a"/><stop offset="1" stop-color="#ff6a2b"/></linearGradient></defs><path fill="url(#bgg)" d="M9 17h30l-2.6 20.6A4.5 4.5 0 0 1 32 41.5H16a4.5 4.5 0 0 1-4.4-3.9L9 17Z"/><path fill="none" stroke="#ffb04a" stroke-width="3.2" stroke-linecap="round" d="M17 17v-2.5a7 7 0 0 1 14 0V17"/><path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="m19 28.5 3.5 3.5L29 25.5"/></svg></span>
+        Мои покупки
+      </button>
+      <button class="soc" data-act="support">
+        <span class="soc-c"><svg class="s-sup" viewBox="0 0 48 48"><defs><linearGradient id="spg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b57bff"/><stop offset="1" stop-color="#ff5fa8"/></linearGradient></defs><path fill="url(#spg2)" d="M24 7c-10 0-18 6.9-18 15.5 0 4.9 2.6 9.2 6.7 12.1L11 41l7.4-3.7c1.8.5 3.7.7 5.6.7 10 0 18-6.9 18-15.5S34 7 24 7Z"/><g fill="#fff"><circle class="d1" cx="16.5" cy="22.5" r="2.6"/><circle class="d2" cx="24" cy="22.5" r="2.6"/><circle class="d3" cx="31.5" cy="22.5" r="2.6"/></g></svg></span>
+        Поддержка
+      </button>
+    </div>
   </section>
 
   <!-- ===== Страница товара ===== -->
@@ -358,8 +451,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 </div>
 
 <div class="buybar" id="buybar">
-  <div><small>Стоимость</small><b id="bb-price"></b></div>
-  <button class="btn" id="bb-buy">Купить</button>
+  <div class="bb-sale">
+    <div><small>Стоимость</small><b id="bb-price"></b></div>
+    <button class="btn" id="bb-buy">Купить</button>
+  </div>
+  <div class="bb-oos">
+    <button class="btn bb-notify" id="bb-notify"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9.5a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4s2-1.5 2-6.5Z"/><path d="M10 19.5a2 2 0 0 0 4 0"/></svg>Уведомить о поступлении</button>
+    <button class="bb-tg" data-act="support" aria-label="Написать в Telegram"><svg viewBox="0 0 24 24" fill="#fff"><path d="M20.7 4.3 3.4 11c-.9.4-.9 1 0 1.3l4.3 1.4 1.7 5c.2.6.8.8 1.3.3l2.4-2.2 4.5 3.3c.6.4 1.2.2 1.4-.6l3-14c.2-1-.4-1.5-1.3-1.2ZM9.8 13.8l7.9-5.8-6.1 6.6-.3 2.6-1.5-3.4Z"/></svg></button>
+  </div>
 </div>
 
 <nav class="nav" id="nav">
@@ -460,8 +559,14 @@ const PRODUCTS = [
    },
    incl:['Доступ в закрытый канал на месяц','Продление каждый месяц']},
 
-  {id:'gemini', cat:'ai', icon:'gemini', glow:'#6c8cff', badge:'ВЫГОДНО',
-   title:'Gemini Pro на 18 месяцев', sub:'Полтора года доступа', price:249, meta:'18 мес',
+  {id:'gemini', cat:'ai', icon:'gemini', glow:'#6c8cff', badge:'ВЫГОДНО', stock:false,
+   title:'Gemini Pro на 18 месяцев', sub:'Полтора года доступа', price:249, meta:'нет в наличии',
+   rich:[
+     {ico:'orb', h:'Что внутри', chips:['Gemini 4 Argon','3.1 Pro','3.8 Flash','Veo 3.1','Генерация фото','Музыка','Banana','Antigravity','Deep Research','5 ТБ в облаке']},
+     {ico:'key', h:'Как активировать', steps:['Оплачиваешь заказ','Бот присылает ссылку на активацию','Открываешь её в браузере, где уже вошёл в свой Google-аккаунт'], ok:'Банковская карта не нужна'},
+     {ico:'warn', h:'Перед покупкой', dot:'#ff8a3d', list:['Google-аккаунту должно быть 18+','Активируй ссылку сразу после покупки','Нужен VPN — с Gemini работает не каждый','Не сработает, если на аккаунте уже была эта или похожая подписка']},
+     {ico:'cam', h:'Гарантия 24 часа', text:'Сними видео одним дублем: от нажатия «Купить» до проверки подписки в аккаунте. Если подписка не включилась, пришли видео в поддержку в течение 24 часов — заменим или вернём деньги. Без видео замену не делаем.'},
+   ],
    desc:'Gemini Pro на полтора года.',
    incl:['Gemini Pro на 18 месяцев','Инструкция по активации']},
 
@@ -553,7 +658,7 @@ $('#chips').addEventListener('click', e => {
 $('#grid').addEventListener('click', e => {
   const c = e.target.closest('.card'); if (!c) return;
   tap(); const p = PRODUCTS.find(p => p.id === c.dataset.id);
-  p.page ? openProduct(p) : openSheet(p);
+  (p.page || p.rich) ? openProduct(p) : openSheet(p);
 });
 
 /* ====== Карточка товара ====== */
@@ -587,6 +692,28 @@ function onBack(){
   else if ($('#v-product').classList.contains('on')) leaveProduct();
 }
 
+/* ====== Иконки блоков богатой страницы ====== */
+const NOTE_ICONS = {
+  orb:`<svg class="n-orb" viewBox="0 0 48 48"><defs><radialGradient id="orbg" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#8ff3ff"/><stop offset=".5" stop-color="#3f7dff"/><stop offset="1" stop-color="#7a2cff"/></radialGradient></defs><circle class="core" cx="24" cy="24" r="14" fill="url(#orbg)"/><g class="ring"><ellipse cx="24" cy="24" rx="21" ry="6.5" fill="none" stroke="#ffd36b" stroke-width="2.6" transform="rotate(-22 24 24)"/></g><circle cx="19" cy="18.5" r="3.2" fill="#fff" opacity=".55"/></svg>`,
+  key:`<svg class="n-key" viewBox="0 0 48 48"><defs><linearGradient id="keyg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6cf0a4"/><stop offset="1" stop-color="#19b866"/></linearGradient></defs><circle cx="16" cy="18" r="10" fill="url(#keyg)"/><circle cx="13.5" cy="15.5" r="3.2" fill="#0f2a1c"/><path d="M22.5 24.5 38 40m-6.5-6.5 4-4M35 37l3.5-3.5" stroke="url(#keyg)" stroke-width="5" stroke-linecap="round" fill="none"/></svg>`,
+  warn:`<svg class="n-warn" viewBox="0 0 48 48"><defs><linearGradient id="wrng" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc23d"/><stop offset="1" stop-color="#ff4d3d"/></linearGradient></defs><path d="M21.2 7.6a3.2 3.2 0 0 1 5.6 0l16.8 29.6a3.2 3.2 0 0 1-2.8 4.8H7.2a3.2 3.2 0 0 1-2.8-4.8Z" fill="url(#wrng)"/><g class="bang" fill="#fff"><rect x="21.6" y="16" width="4.8" height="13" rx="2.4"/><circle cx="24" cy="34.5" r="2.7"/></g></svg>`,
+  cam:`<svg class="n-cam" viewBox="0 0 48 48"><defs><linearGradient id="camg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fb6ff"/><stop offset="1" stop-color="#3a5bff"/></linearGradient></defs><rect x="4" y="13" width="29" height="23" rx="7" fill="url(#camg)"/><path d="M33 21.5 43 16v17l-10-5.5Z" fill="#3a5bff"/><circle cx="18.5" cy="24.5" r="6" fill="#0d1a3a"/><circle cx="18.5" cy="24.5" r="3" fill="#8fc6ff"/><circle class="rec" cx="9.5" cy="18" r="2.3" fill="#ff3b4f"/></svg>`,
+};
+function noteHtml(n){
+  let body = '';
+  if (n.chips) body = `<div class="chipset">${n.chips.map(c=>`<span>${c}</span>`).join('')}</div>`;
+  if (n.steps) body = `<div class="mini-steps">${n.steps.map((t,i)=>`<div><i>${i+1}</i>${t}</div>`).join('')}</div>` + (n.ok ? `<div class="okline">✓ ${n.ok}</div>` : '');
+  if (n.list)  body = `<ul style="--dot:${n.dot||'#8b8b93'}">${n.list.map(t=>`<li>${t}</li>`).join('')}</ul>`;
+  if (n.text)  body = `<p>${n.text}</p>`;
+  return `<div class="note">${NOTE_ICONS[n.ico]}<div class="note-b"><b>${n.h}</b>${body}</div></div>`;
+}
+function richHtml(p){
+  return `
+    <div class="gp-head"><div class="ico" data-i="${p.icon}">${icon(p)}</div><div class="gp-title">${p.title}</div></div>
+    <div class="gp-price">${rub(p.price)} ₽${p.unit ? `<small>${p.unit}</small>` : ''}${p.stock === false ? '<span class="stock">нет в наличии</span>' : ''}</div>
+    ${p.rich.map(noteHtml).join('')}`;
+}
+
 /* ====== Отдельная страница товара ====== */
 const BACK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`;
 let shopY = 0;
@@ -602,8 +729,9 @@ function openProduct(p, push = true){
   closeSheet();
   if (!$('#v-product').classList.contains('on')) shopY = window.scrollY;
   const soon = p.price == null, pg = p.page;
-  $('#v-product').innerHTML = `
-    ${inTg ? '' : `<button class="pp-back" data-act="back">${BACK}Назад</button>`}
+  const back = inTg ? '' : `<button class="pp-back" data-act="back">${BACK}Назад</button>`;
+  $('#v-product').innerHTML = p.rich ? back + richHtml(p) : `
+    ${back}
     <div class="pp-hero">
       <div class="card-top">
         <div class="ico" data-i="${p.icon}">${icon(p)}</div>
@@ -619,6 +747,8 @@ function openProduct(p, push = true){
   $('#bb-price').innerHTML = soon ? 'скоро' : `${rub(p.price)} ₽${p.unit ? `<small>${p.unit}</small>` : ''}`;
   $('#bb-buy').textContent = soon ? 'Сообщить о старте' : 'Купить';
   $('#bb-buy').onclick = () => buy(p);
+  $('#buybar').classList.toggle('oos', p.stock === false);
+  $('#bb-notify').onclick = () => { tap('medium'); toast('Сообщим, как только появится в наличии'); };
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-product'));
   $('#nav').classList.add('hide'); $('#buybar').classList.add('on');
   window.scrollTo(0, 0);
@@ -639,7 +769,7 @@ function leaveProduct(){
 }
 window.addEventListener('popstate', () => {
   const p = history.state && PRODUCTS.find(x => x.id === history.state.p);
-  if (p && p.page) openProduct(p, false);
+  if (p && (p.page || p.rich)) openProduct(p, false);
   else if ($('#v-product').classList.contains('on')) closeProduct();
 });
 
@@ -676,6 +806,9 @@ document.addEventListener('click', e => {
   const g = e.target.closest('[data-go]'); if (g){ tap('soft'); go(g.dataset.go); }
   const a = e.target.closest('[data-act="support"]');
   if (e.target.closest('[data-act="back"]')) leaveProduct();
+  if (e.target.closest('[data-act="copy-id"]') && user){
+    tap(); try{ navigator.clipboard.writeText(String(user.id)); toast('ID скопирован'); }catch(err){}
+  }
   const l = e.target.closest('[data-link]');
   if (l){ tap(); openLink(CONFIG[l.dataset.link]); }
   if (a){ tap(); CONFIG.support ? openLink('https://t.me/' + CONFIG.support) : toast('Контакт поддержки скоро появится'); }
@@ -692,7 +825,7 @@ renderChips(); renderGrid();
 
 // прямая ссылка на товар: #privplus или ?startapp=privplus из бота
 const startId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || location.hash.slice(1);
-const startP = PRODUCTS.find(p => p.id === startId && p.page);
+const startP = PRODUCTS.find(p => p.id === startId && (p.page || p.rich));
 if (startP) openProduct(startP, false);
 // кнопки бота: #profile, #orders, #info — нужная вкладка; #catalog — сразу к товарам
 else if (['profile','orders','info'].includes(startId)) go(startId);
