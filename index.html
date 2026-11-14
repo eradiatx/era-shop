@@ -40,12 +40,10 @@ button{cursor:pointer}
 
 /* ---------- шапка как на витрине образца ---------- */
 .hero{position:relative;height:clamp(220px,30vw,440px);border-radius:30px;overflow:hidden;isolation:isolate;background:#111}
-/* обои: чёткая картинка по центру + её же размытая копия по краям — симметрично на любой ширине */
+/* обои: картинка чётко на всю шапку, у каждой своя точка фокуса */
 .hero-wall{position:absolute;inset:0;z-index:-2;overflow:hidden;transition:opacity .6s ease,transform 1.2s cubic-bezier(.2,.8,.2,1)}
 .hero-wall.enter{opacity:0;transform:scale(1.08)}
-.hw-blur{position:absolute;inset:-12%;width:124%;height:124%;object-fit:cover;filter:blur(32px) brightness(.78) saturate(1.2)}
-.hw-main{position:absolute;top:0;left:50%;height:100%;width:var(--w,100%);transform:translateX(-50%);object-fit:cover}
-.hw-main.fade{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 13%,#000 87%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 13%,#000 87%,transparent 100%)}
+.hw-main{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:
   linear-gradient(0deg,rgba(0,0,0,.62) 0%,rgba(0,0,0,0) 55%),
   linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 35%)}
@@ -305,7 +303,7 @@ button{cursor:pointer}
   <!-- ===== Магазин ===== -->
   <section class="view on" id="v-shop">
     <div class="hero" id="hero">
-      <div class="hero-wall" id="hero-wall"><img class="hw-blur" src="hero.jpg" alt=""><img class="hw-main" src="hero.jpg" alt="" style="object-position:50% 54%"></div>
+      <div class="hero-wall" id="hero-wall"><img class="hw-main" src="hero.jpg" alt="" style="object-position:50% 45%"></div>
       <div class="hero-in">
         <div class="hero-top">
           <div class="hero-name">Era Shop</div>
@@ -458,12 +456,12 @@ const PRODUCTS = [
 
 // обои шапки витрины
 const WALLS = [
-  {id:'standard',  name:'Стандартные',  src:'hero.jpg',                th:'wallpapers/standard_s.jpg',  pos:'50% 54%'},
+  {id:'standard',  name:'Стандартные',  src:'hero.jpg',                th:'wallpapers/standard_s.jpg',  pos:'50% 45%'},
   {id:'halftone',  name:'Облака',       src:'wallpapers/halftone.jpg',  th:'wallpapers/halftone_s.jpg',  pos:'50% 45%'},
-  {id:'gtr',       name:'GT-R',         src:'wallpapers/gtr.jpg',       th:'wallpapers/gtr_s.jpg',       pos:'50% 60%'},
+  {id:'gtr',       name:'GT-R',         src:'wallpapers/gtr.jpg',       th:'wallpapers/gtr_s.jpg',       pos:'50% 50%'},
   {id:'porsche',   name:'Porsche',      src:'wallpapers/porsche.jpg',   th:'wallpapers/porsche_s.jpg',   pos:'50% 38%'},
   {id:'ski',       name:'Подъёмник',    src:'wallpapers/ski.jpg',       th:'wallpapers/ski_s.jpg',       pos:'50% 50%'},
-  {id:'bateman',   name:'Бейтман',      src:'wallpapers/bateman.jpg',   th:'wallpapers/bateman_s.jpg',   pos:'50% 30%'},
+  {id:'bateman',   name:'Бейтман',      src:'wallpapers/bateman.jpg',   th:'wallpapers/bateman_s.jpg',   pos:'50% 27%'},
   {id:'moon',      name:'Луна',         src:'wallpapers/moon.jpg',      th:'wallpapers/moon_s.jpg',      pos:'50% 14%'},
 ];
 
@@ -529,7 +527,7 @@ const store = {
 };
 
 /* ====== Данные с сервера бота ====== */
-const S = { balance: 0, spent: 0, orders: [], pending: [], stock: {}, methods: { sbp: false, crypto: false } };
+const S = { balance: 0, spent: 0, orders: [], pending: [], stock: {}, off: new Set(), methods: { sbp: false, crypto: false } };
 async function post(path, data){
   const r = await fetch(CONFIG.api + path, { method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ initData: tg.initData, ...data }) });
@@ -570,6 +568,7 @@ const picon = (p, cls = '') => p.svg
 
 function stockInfo(p){
   if (p.price == null) return { txt:'скоро', pct:0, off:true, soon:true };
+  if (S.off.has(p.id)) return { txt:'нет в наличии', pct:0, off:true, oos:true };
   if (!p.stocked) return { txt:'∞', pct:100 };
   const n = S.stock[p.id];
   if (n === undefined) return { txt:'', pct:0 };
@@ -842,40 +841,24 @@ function renderOrders(){
 
 /* ====== Обои шапки ====== */
 let wallId = 'standard';
-// ширина чёткой части: вертикальные кадры не режем в полоску — по краям их же размытая копия
-function fitWall(layer){
-  const main = layer.querySelector('.hw-main'), hero = $('#hero');
-  if (!main.naturalWidth) return;
-  const W = hero.clientWidth, H = hero.clientHeight, ar = main.naturalWidth / main.naturalHeight;
-  const minShare = W < 700 ? .72 : .44;            // на телефоне картинка шире, на ПК — аккуратное «окно»
-  let w = Math.min(W, Math.max(W * minShare, H * ar * 1.35));
-  if (w > W * .82) w = W;                           // почти во всю ширину — тогда уж во всю
-  main.style.setProperty('--w', w + 'px');
-  main.classList.toggle('fade', w < W);
-}
-function wallLayer(w){
-  const layer = document.createElement('div');
-  layer.className = 'hero-wall';
-  layer.innerHTML = `<img class="hw-blur" alt=""><img class="hw-main" alt="" style="object-position:50% ${(w.pos || '50% 50%').split(' ')[1]}">`;
-  layer.querySelector('.hw-blur').src = w.src;
-  return layer;
-}
 function setWall(id, animate = true){
   const w = WALLS.find(x => x.id === id) || WALLS[0];
   wallId = w.id;
-  const old = $('#hero-wall'), layer = wallLayer(w), main = layer.querySelector('.hw-main');
-  if (animate) layer.classList.add('enter');
-  main.onload = () => {
+  const old = $('#hero-wall'), layer = document.createElement('div');
+  layer.className = 'hero-wall' + (animate ? ' enter' : '');
+  layer.innerHTML = `<img class="hw-main" alt="" style="object-position:${w.pos || '50% 50%'}">`;
+  const img = layer.firstChild;
+  img.onload = () => {
     old.id = ''; layer.id = 'hero-wall';
-    old.after(layer); fitWall(layer);
+    old.after(layer);
     if (animate){
-      requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.remove('enter')));
+      layer.getBoundingClientRect();          // зафиксировать начальное состояние, чтобы сработал переход
+      layer.classList.remove('enter');
       setTimeout(() => old.remove(), 900);
     } else old.remove();
   };
-  main.src = w.src;
+  img.src = w.src;
 }
-addEventListener('resize', () => { const l = $('#hero-wall'); l && fitWall(l); });
 function openWalls(){
   openSheet(`<div class="sh-t">Обои</div><div class="sh-s">Фон карточки на витрине</div>
     <div class="walls">${WALLS.map((w, i) => `<button class="wall ${w.id === wallId ? 'on' : ''}" data-wall="${w.id}" style="animation-delay:${i*35}ms"><img src="${w.th}" alt=""><span>${w.name}</span></button>`).join('')}</div>`);
@@ -998,7 +981,9 @@ async function loadProfile(){
 async function loadCatalog(){
   try{
     const d = await (await fetch(CONFIG.api + '/api/catalog')).json();
-    S.stock = d.stock || {}; S.methods = d.methods || S.methods;
+    S.stock = d.stock || {}; S.methods = d.methods || S.methods; S.off = new Set(d.off || []);
+    // цены, которые ты поменял командой /price в боте
+    for (const p of PRODUCTS) if (d.prices && p.id in d.prices) p.price = d.prices[p.id];
     renderGrid();
     if (sub === 'product' && cur) renderBuybar();
   }catch(e){}
@@ -1085,7 +1070,6 @@ function route(key, push){
   }
 }
 renderChips(); renderGrid(); hydrate();
-{ const l = $('#hero-wall'), m = l.querySelector('.hw-main'); m.complete ? fitWall(l) : (m.onload = () => fitWall(l)); }
 Promise.all([store.get('wall'), store.get('snow')]).then(([wl, sn]) => {
   if (wl && wl !== 'standard') setWall(wl, false);
   Snow.set(sn !== '0');      // снег включён по умолчанию — новогодняя тема
