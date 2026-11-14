@@ -645,7 +645,8 @@ function renderChips(){
 }
 function renderGrid(){
   const list = PRODUCTS.filter(p => cat === 'all' || p.cat === cat);
-  setHTML($('#grid'), list.map(card).join('') || `<div class="empty-f">Здесь пока ничего нет</div>`);
+  // широкая карточка — только во «Все»; в разделах все карточки одного размера, парами
+  setHTML($('#grid'), list.map((p, i) => card(cat === 'all' ? p : { ...p, wide: false }, i)).join('') || `<div class="empty-f">Здесь пока ничего нет</div>`);
 }
 $('#chips').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
