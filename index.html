@@ -699,8 +699,9 @@ function renderChips(){
 }
 function renderGrid(){
   const list = PRODUCTS.filter(p => !S.hidden.has(p.id) && (cat === 'all' || p.cat === cat));
-  // широкая карточка — только во «Все»; в разделах все карточки одного размера, парами
-  setHTML($('#grid'), list.map((p, i) => card(cat === 'all' ? p : { ...p, wide: false }, i)).join('') || `<div class="empty-f">Здесь пока ничего нет</div>`);
+  // широкая карточка — во «Все» и в разделе, где она одна (Приватка, пока вторая скрыта);
+  // если в разделе несколько товаров — все одного размера, парами
+  setHTML($('#grid'), list.map((p, i) => card(cat === 'all' || list.length === 1 ? p : { ...p, wide: false }, i)).join('') || `<div class="empty-f">Здесь пока ничего нет</div>`);
 }
 $('#chips').addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
