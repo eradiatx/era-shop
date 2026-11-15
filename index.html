@@ -336,6 +336,18 @@ button{cursor:pointer}
 .ref-link svg{flex:none;width:20px;height:20px;color:var(--muted)}
 .btn.done{background:var(--card);color:#4cd97b}
 
+/* ---------- анкета после оплаты и выданные заказы ---------- */
+.aqs{display:grid;gap:10px;margin:4px 0 14px}
+.aq{display:block;background:var(--card);border-radius:18px;padding:12px 14px}
+.aq span{display:block;color:var(--muted);font-size:13.5px;line-height:1.4;margin-bottom:6px}
+.aq textarea{display:block;width:100%;min-height:44px;resize:none;background:none;border:0;outline:none;font:inherit;font-size:15.5px;color:#fff;line-height:1.45}
+.aq textarea::placeholder{color:var(--dim)}
+.aq.err{box-shadow:inset 0 0 0 1.5px #ff6b6b}
+.ord-note{margin-top:12px;background:#111113;border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.5;color:#e6e6e9;white-space:pre-wrap;word-break:break-word}
+.ord-note a{color:#5ab0ff;text-decoration:none}
+.ord-ok{margin-top:10px;font-size:13.5px;color:#4cd97b}
+.ord .btn{width:100%;height:46px;margin-top:12px;font-size:15px}
+
 /* ---------- toast ---------- */
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-200%);opacity:0;background:#f5f5f7;color:#0a0a0a;padding:12px 18px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.4);transition:transform .4s cubic-bezier(.2,.9,.2,1),opacity .3s;z-index:50;max-width:calc(100% - 32px);text-align:center}
 .toast.on{transform:translate(-50%,0);opacity:1}
@@ -838,6 +850,34 @@ async function applyPromo(btn){
   try{ tg.HapticFeedback.notificationOccurred('success') }catch(e){}
   openBuySheet({ cls:'ok', text:`Промокод применён: ${data.label}` });
 }
+/* ====== Анкета после оплаты (Claude, консультация, бриф) ====== */
+function openAskSheet(order, intro, justPaid){
+  const qs = order.qs || [];
+  openSheet(`<div class="done-box">${justPaid ? `${emo('🎉')}<b>Заказ оплачен</b>` : `<b>Анкета по заказу</b>`}
+      <p>${esc(intro || 'Ответь на пару вопросов — так я быстрее всё сделаю')}</p></div>
+    <div class="aqs">${qs.map((q, i) => `<label class="aq"><span>${qs.length > 1 ? `${i + 1}. ` : ''}${esc(q)}</span><textarea data-aq="${i}" rows="2" maxlength="1000" placeholder="Твой ответ"></textarea></label>`).join('')}</div>
+    <button class="btn" data-act="ask-send" data-oid="${esc(order.id)}">Отправить</button>
+    <p class="hint">Можно ответить позже — в «Покупках» или прямо в чате с ботом</p>`);
+}
+async function sendAnswers(btn){
+  const fields = $$('#sheet [data-aq]');
+  const answers = fields.map(f => f.value.trim());
+  fields.forEach(f => f.closest('.aq').classList.toggle('err', !f.value.trim()));
+  if (answers.some(a => !a)) return toast('Ответь, пожалуйста, на все вопросы');
+  btn.disabled = true;
+  const { ok, data } = await post('/api/answers', { oid: btn.dataset.oid, answers }).catch(() => ({ ok:false, data:{} }));
+  btn.disabled = false;
+  if (!ok && data.error !== 'already') return toast('Не получилось отправить, попробуй ещё раз');
+  const o = S.orders.find(x => x.id === btn.dataset.oid);
+  if (o){ o.ask = false; o.answers = answers; delete o.qs; }
+  if (tab === 'orders' && !sub) renderOrders();
+  try{ tg.HapticFeedback.notificationOccurred('success') }catch(e){}
+  openSheet(`<div class="done-box">${emo('✅')}<b>Передал!</b><p>Скоро напишу и всё сделаю. Ответ придёт в чат с ботом и появится в «Покупках».</p>
+    <button class="btn" data-act="to-orders">Мои покупки</button></div>`);
+}
+// ссылки в тексте выдачи — кликабельные
+const linkify = t => esc(t).replace(/(https?:\/\/[^\s<]+|t\.me\/[^\s<]+)/g, u => `<a href="#" data-url="${u.startsWith('http') ? u : 'https://' + u}">${u}</a>`);
+
 async function pay(btn){
   btn.disabled = true;
   const { ok, data } = await post('/api/buy', { pid: cur.id, qty, promo: promo ? promo.code : undefined }).catch(() => ({ ok:false, data:{} }));
@@ -854,8 +894,9 @@ async function pay(btn){
   if (REV[cur.id]) renderReviews(cur.id, false);
   if (cur.stocked){ S.stock[cur.id] = Math.max(0, (S.stock[cur.id] || 0) - qty); renderGrid(); }
   try{ tg.HapticFeedback.notificationOccurred('success') }catch(e){}
+  if (data.ask) return openAskSheet(data.order, data.ask.intro, true);
   openSheet(`<div class="done-box">${emo('🎉')}<b>Заказ оплачен</b>
-    <p>${data.order.items ? 'Доступ ниже и в чате с ботом' : 'Скоро напишу тебе в личку и всё передам'}</p>
+    <p>${data.order.items ? 'Доступ ниже и в чате с ботом' : 'Скоро пришлю доступ в чат с ботом — он же появится здесь, в «Покупках»'}</p>
     ${data.order.items ? `<div class="ord-items" style="margin-bottom:16px">${data.order.items.map(x => `<button class="code" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}
     <button class="btn" data-act="to-orders">Мои покупки</button></div>`);
 }
@@ -985,6 +1026,9 @@ function renderOrders(){
       <div class="ord-top">${picon(p, 'sm')}<div class="ord-t"><b>${esc(o.title)}${o.qty > 1 ? ' × ' + o.qty : ''}</b><span>${new Date(o.ts).toLocaleDateString('ru-RU')} · ${rub(o.sum)} ₽${o.promo ? ` · промокод ${esc(o.promo)}` : ''}</span></div>
       <span class="ost ${o.status}">${o.status === 'done' ? 'Выдан' : 'В работе'}</span></div>
       ${o.items ? `<div class="ord-items">${o.items.map(x => `<button class="code" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}
+      ${o.note ? `<div class="ord-note">${linkify(o.note)}</div>` : ''}
+      ${o.ask ? `<button class="btn" data-act="ask-open" data-oid="${esc(o.id)}">📝 Заполнить анкету</button>`
+        : o.answers && o.status !== 'done' ? `<div class="ord-ok">✓ Анкета отправлена — скоро напишу</div>` : ''}
     </div>`;
   }).join('') + `<div class="center"><button class="btn ghost" data-act="support">Вопрос по заказу</button></div>`);
 }
@@ -1194,6 +1238,8 @@ document.addEventListener('click', e => {
     if (a === 'review'){ tap(); return openReviewSheet(); }
     if (a === 'review-send') return sendReview(act);
     if (a === 'rv-all') return renderReviews(cur.id, true);
+    if (a === 'ask-send') return sendAnswers(act);
+    if (a === 'ask-open'){ const o = S.orders.find(x => x.id === act.dataset.oid); if (o){ tap(); openAskSheet(o, '', false); } return; }
     if (a === 'ref'){ tap(); return openRef(); }
     if (a === 'ref-share'){ tap('medium'); return shareRef(); }
     if (a === 'pending'){ const p = S.pending[S.pending.length - 1]; if (p) openLink(p.url); return; }
@@ -1211,6 +1257,8 @@ document.addEventListener('click', e => {
     $$('.wall').forEach(x => x.classList.toggle('on', x === w));
     setWall(w.dataset.wall); store.set('wall', w.dataset.wall); return;
   }
+  const lu = t.closest('[data-url]');
+  if (lu){ e.preventDefault(); tap(); return openLink(lu.dataset.url); }
   const cp = t.closest('[data-copy]');
   if (cp){ try{ navigator.clipboard.writeText(cp.dataset.copy); toast('Скопировано', 'success'); }catch(err){} return; }
   const l = t.closest('[data-link]'); if (l){ tap(); return openLink(CONFIG[l.dataset.link]); }
