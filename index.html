@@ -6,6 +6,7 @@
 <title>Era Shop</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js"></script>
+<link rel="preconnect" href="https://era-shop-bot.erashop.workers.dev" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -389,7 +390,18 @@ button{cursor:pointer}
   <!-- ===== Магазин ===== -->
   <section class="view on" id="v-shop">
     <div class="hero" id="hero">
-      <div class="hero-wall" id="hero-wall"><img class="hw-main" src="hero.jpg" alt="" style="object-position:50% 45%"></div>
+      <div class="hero-wall" id="hero-wall"><img class="hw-main" id="hw0" alt=""></div>
+      <script>
+      // выбранные обои — сразу из памяти устройства, без ожидания облака Telegram (те же файлы и точки, что в WALLS)
+      (function(){
+        var W = { standard:['hero.jpg','50% 45%'], halftone:['wallpapers/halftone.jpg','50% 45%'], gtr:['wallpapers/gtr.jpg','50% 50%'],
+          porsche:['wallpapers/porsche.jpg','50% 38%'], ski:['wallpapers/ski.jpg','50% 50%'], bateman:['wallpapers/bateman.jpg','50% 27%'],
+          moon:['wallpapers/moon.jpg','50% 14%'] }, w = null;
+        try { w = localStorage.getItem('era_wall'); } catch (e) {}
+        var x = W[w] || W.standard, i = document.getElementById('hw0');
+        i.style.objectPosition = x[1]; i.src = x[0];
+      })();
+      </script>
       <div class="hero-in">
         <div class="hero-top">
           <div class="hero-name">Era Shop</div>
@@ -1281,7 +1293,8 @@ function renderProfileStats(){
   $('#p-pending').hidden = !pend.length;
   $('#p-pending-s').textContent = `${pend.length} ${plural(pend.length, ['счёт ждёт','счёта ждут','счетов ждут'])} оплаты`;
 }
-function applyProfile(d){
+function applyProfile(d, fromCache){
+  if (!fromCache && user) ls.set('me_' + user.id, JSON.stringify(d));
   const pal = PROFILE_COLORS[d.profileColor] || ['#2a2a30', '#1d1d22'];
   profileTop = pal[0];
   $('#pf-hero').style.setProperty('--pf1', pal[0]);
@@ -1431,10 +1444,19 @@ function route(key, push){
   }
 }
 renderChips(); renderGrid(); hydrate();
+// обои уже стоят (скрипт в шапке) — запоминаем какие; снег — тоже сразу из памяти устройства
+const wl0 = ls.get('wall');
+wallId = WALLS.some(w => w.id === wl0) ? wl0 : 'standard';
+Snow.set(ls.get('snow') !== '0');      // снег включён по умолчанию — новогодняя тема
+// потом сверяемся с облаком Telegram (выбор с другого устройства)
 Promise.all([store.get('wall'), store.get('snow')]).then(([wl, sn]) => {
-  if (wl && wl !== 'standard') setWall(wl, false);
-  Snow.set(sn !== '0');      // снег включён по умолчанию — новогодняя тема
+  if (wl && wl !== wallId && WALLS.some(w => w.id === wl)){ setWall(wl, false); ls.set('wall', wl); }
+  const snowOn = sn !== '0';
+  if (snowOn !== Snow.on) Snow.set(snowOn);
+  ls.set('snow', snowOn ? '1' : '0');
 });
+// баланс и покупки — сразу из прошлого раза, свежие данные придут следом
+if (user){ try{ const c = JSON.parse(ls.get('me_' + user.id) || 'null'); if (c) applyProfile(c, true); }catch(e){} }
 loadCatalog(); loadProfile();
 // прямая ссылка: #privplus, #topup, #profile… или ?startapp= из бота
 const startKey = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || location.hash.slice(1);
