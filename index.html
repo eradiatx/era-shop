@@ -336,6 +336,32 @@ button{cursor:pointer}
 .ref-link svg{flex:none;width:20px;height:20px;color:var(--muted)}
 .btn.done{background:var(--card);color:#4cd97b}
 
+/* ---------- подписка: периоды и статус ---------- */
+.plans{margin:18px 0 6px}
+.plans-t{font-size:15px;font-weight:700;margin:0 4px 10px}
+.plan{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border-radius:20px;padding:15px 18px;margin-bottom:8px;box-shadow:inset 0 0 0 1.5px transparent;transition:box-shadow .2s,transform .15s}
+.plan:active{transform:scale(.985)}
+.plan.on{box-shadow:inset 0 0 0 1.5px #fff}
+.pl-r{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--dim);transition:box-shadow .2s}
+.plan.on .pl-r{box-shadow:inset 0 0 0 7px #fff}
+.pl-t{flex:1;min-width:0}
+.pl-t b{display:block;font-size:16.5px}
+.pl-t span{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.pl-t s{color:var(--dim)}
+.pl-save{flex:none;font-style:normal;font-size:12px;font-weight:700;padding:4px 8px;border-radius:99px;background:rgba(52,199,89,.14);color:#4cd97b}
+.pl-p{flex:none;font-size:17px;font-weight:700;white-space:nowrap}
+.subst{background:var(--card);border-radius:22px;padding:16px;margin:18px 0 4px}
+.subst-top{display:flex;align-items:center;gap:12px}
+.subst-top .emo{flex:none;font-size:36px}
+.subst-top b{display:block;font-size:16.5px}
+.subst-top span{display:block;color:var(--muted);font-size:13.5px;margin-top:3px}
+.subst.end .subst-top b{color:#ffb340}
+.subst-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-top:14px}
+.subst-btns .btn,.ord .subst-btns .btn{height:46px;margin-top:0;font-size:15px;padding:0 12px}
+.subst-btns .btn.ghost{background:var(--card-2)}
+.ost.end{background:rgba(255,255,255,.08);color:var(--muted)}
+.keep{display:grid;gap:0;margin:4px 0 6px}
+
 /* ---------- анкета после оплаты и выданные заказы ---------- */
 .aqs{display:grid;gap:10px;margin:4px 0 14px}
 .aq{display:block;background:var(--card);border-radius:18px;padding:12px 14px}
@@ -472,11 +498,14 @@ const CATS = [
 
 // blocks: [эмодзи, заголовок, текст] — текст пока примерный, заменим на твой
 const PRODUCTS = [
-  {id:'privplus', cat:'private', wide:true, emo:'👑', badge:'NEW', title:'Приватка Plus', price:999, unit:'/мес',
+  // подписка: периоды и цены приходят из бота (/api/catalog), здесь — значения по умолчанию
+  {id:'privplus', cat:'private', wide:true, emo:'👑', badge:'NEW', title:'Приватка Plus', price:1299, unit:'/мес',
+   plans:[{id:'m1', label:'1 месяц', months:1, price:1299}, {id:'m3', label:'3 месяца', months:3, price:2999}, {id:'y1', label:'1 год', months:12, price:12999}],
    blocks:[
-     ['💎','Что внутри','Закрытый канал: разборы, шаблоны, готовые промпты, подборки сервисов и общение с участниками.'],
-     ['🐥','Как получить?','После оплаты бот пришлёт ссылку-приглашение в канал.'],
-     ['❗','Важно','Подписка на месяц. Не продлишь — доступ закроется.'],
+     ['💎','Что внутри','Приватный канал CONTENT ROOM: скиллы для Claude, разборы роликов, идеи с готовым хуком и реальные способы заработать на контенте.'],
+     ['🐥','Как попасть','После оплаты бот пришлёт ссылку — жмёшь «Вступить», и заявку одобрят автоматически.'],
+     ['📆','Продление','Автопродление с баланса, за 3 дня до конца напомню. Отключить можно в любой момент.'],
+     ['❗','Важно','Закончится подписка — доступ закроется. Продлишь — вернёшься по той же ссылке.'],
    ]},
   {id:'consult', cat:'services', emo:'🧑‍💻', title:'Личная консультация со мной', price:1299, unit:'/час',
    blocks:[
@@ -496,7 +525,7 @@ const PRODUCTS = [
      ['🐥','Как получить?','После оплаты пришлёшь ID аккаунта — подключу и напишу, что готово.'],
      ['❗','Важно','Пароль не нужен, только ID. После месяца можно продлить.'],
    ]},
-  {id:'priv', cat:'private', emo:'🔐', title:'Приватка для контента', price:499, unit:'/мес',
+  {id:'priv', cat:'private', emo:'🔐', hidden:true, title:'Приватка для контента', price:499, unit:'/мес',
    blocks:[
      ['💎','Что внутри','Материалы для роликов и постов, идеи, форматы, полезные ссылки и сервисы.'],
      ['🐥','Как получить?','После оплаты бот пришлёт ссылку-приглашение.'],
@@ -590,7 +619,8 @@ const store = {
 
 /* ====== Данные с сервера бота ====== */
 const S = { balance: 0, spent: 0, orders: [], pending: [], stock: {}, off: new Set(), methods: { sbp: false, crypto: false },
-  ratings: {}, waits: new Set(), reviewed: new Set(), refs: 0, refIncome: 0, refPct: 10, refLink: '' };
+  ratings: {}, waits: new Set(), reviewed: new Set(), refs: 0, refIncome: 0, refPct: 10, refLink: '',
+  subs: {}, hidden: new Set(PRODUCTS.filter(p => p.hidden).map(p => p.id)) };
 async function post(path, data){
   const r = await fetch(CONFIG.api + path, { method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ initData: tg.initData, ...data }) });
@@ -656,7 +686,7 @@ function renderChips(){
   $('#chips').innerHTML = CATS.map(c => `<button class="chip ${c.id===cat?'on':''}" data-cat="${c.id}">${c.name}</button>`).join('');
 }
 function renderGrid(){
-  const list = PRODUCTS.filter(p => cat === 'all' || p.cat === cat);
+  const list = PRODUCTS.filter(p => !S.hidden.has(p.id) && (cat === 'all' || p.cat === cat));
   // широкая карточка — только во «Все»; в разделах все карточки одного размера, парами
   setHTML($('#grid'), list.map((p, i) => card(cat === 'all' ? p : { ...p, wide: false }, i)).join('') || `<div class="empty-f">Здесь пока ничего нет</div>`);
 }
@@ -719,10 +749,14 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 /* ====== Страница товара ====== */
-let cur = null, qty = 1;
+let cur = null, qty = 1, plan = null;
+const fmtDate = ts => new Date(ts).toLocaleDateString('ru-RU');
+const curPlan = () => cur && cur.plans ? (cur.plans.find(x => x.id === plan) || cur.plans[0]) : null;
+const curTotal = () => { const pl = curPlan(); return pl ? pl.price : cur.price * qty; };
 function openProduct(p, push = true){
   if (!p) return;
   cur = p; qty = 1;
+  plan = p.plans ? (p.plans.find(x => x.months === 1) || p.plans[0]).id : null;
   const s = stockInfo(p);
   const chip = s.soon ? '' : `<span class="pchip ${s.low ? 'low' : ''} ${s.oos ? 'off' : ''}">${SVG.box}${s.txt || '∞'}</span>`;
   setHTML($('#v-product'), `${backBtn()}
@@ -730,12 +764,90 @@ function openProduct(p, push = true){
     <div class="pp-head">${picon(p, 'sm')}<h1>${p.title}</h1></div>
     <div class="pp-price"><b>${p.price == null ? 'скоро' : rub(p.price) + ' ₽' + (p.unit || '')}</b>${chip}</div>
     ${p.blocks.map(([e, l, t]) => `<div class="blk">${emo(e)}<b>${l}:</b> ${t}</div>`).join('')}
+    ${p.plans ? `<div id="subbox"></div><div class="plans" id="plans"></div>` : ''}
     ${p.price == null ? '' : `<div class="rv" id="rv"><div class="rv-head"><b>Отзывы</b><span id="rv-sum"></span></div><div id="rv-list"><div class="rv-empty">Загружаю отзывы…</div></div><div id="rv-cta"></div></div>`}`);
   promo = null;
+  if (p.plans) renderPlans();
   renderBuybar();
   if (p.price != null) loadReviews(p.id);
   openSub('product', p.id, push);
 }
+// периоды подписки: как в Tribute — год, 3 месяца, месяц; у длинных — цена в месяц и выгода
+function renderPlans(){
+  const box = $('#plans');
+  if (!box || !cur || !cur.plans) return;
+  const s = S.subs[cur.id], base = cur.plans.find(x => x.months === 1) || cur.plans[0];
+  const list = [...cur.plans].sort((a, b) => b.months - a.months);
+  setHTML(box, `<div class="plans-t">${s && s.active ? 'Продлить на' : 'Период подписки'}</div>` + list.map(x => {
+    const save = x.months > 1 ? Math.round((1 - x.price / (base.price * x.months)) * 100) : 0;
+    return `<button class="plan ${x.id === plan ? 'on' : ''}" data-plan="${x.id}"><span class="pl-r"></span>
+      <div class="pl-t"><b>${esc(x.label)}</b><span>${x.months > 1 ? `${rub(Math.round(x.price / x.months))} ₽ в месяц` : 'помесячно'}</span></div>
+      ${save > 0 ? `<em class="pl-save">−${save}%</em>` : ''}<b class="pl-p">${rub(x.price)} ₽</b></button>`;
+  }).join(''));
+  renderSubBox();
+}
+function renderSubBox(){
+  const box = $('#subbox');
+  if (!box || !cur) return;
+  const s = S.subs[cur.id];
+  if (!s){ box.innerHTML = ''; return; }
+  setHTML(box, s.active
+    ? `<div class="subst"><div class="subst-top">${emo('✅')}<div><b>Подписка активна</b><span>до ${fmtDate(s.until)} · автопродление ${s.auto ? 'включено' : 'выключено'}</span></div></div>
+       <div class="subst-btns">${s.link ? `<button class="btn" data-url="${esc(s.link)}">${s.joined ? 'Открыть приватку' : 'Войти в приватку'}</button>` : ''}
+       <button class="btn ghost" data-act="sub-auto">${s.auto ? 'Отключить автопродление' : 'Включить автопродление'}</button></div></div>`
+    : `<div class="subst end"><div class="subst-top">${emo('⏳')}<div><b>Подписка закончилась</b><span>${fmtDate(s.until)} — выбери период, чтобы вернуться</span></div></div></div>`);
+}
+// автопродление: при выключении бот сначала предлагает остаться со скидкой
+async function toggleAuto(btn){
+  const s = S.subs[cur.id];
+  if (!s) return;
+  tap();
+  btn.disabled = true;
+  const { ok, data } = await post('/api/sub', { pid: cur.id, action: s.auto ? 'auto_off' : 'auto_on' }).catch(() => ({ ok:false, data:{} }));
+  btn.disabled = false;
+  if (!ok) return toast('Не получилось, попробуй ещё раз');
+  if (data.offer) return openKeepSheet(data.offer);
+  S.subs[cur.id] = data.sub; renderSubBox();
+  toast(data.sub.auto ? 'Автопродление включено' : 'Автопродление отключено', 'success');
+}
+function openKeepSheet(offer){
+  openSheet(`<div class="done-box">${emo('😢')}<b>Жаль, что хочешь уйти!</b>
+      <p>Если останешься — скидка. Она разовая, доступ продлится от текущей даты окончания.</p></div>
+    <div class="keep">${offer.map(o => `<button class="plan" data-act="sub-keep" data-plan="${o.id}"><div class="pl-t"><b>Остаться на ${esc(o.label)}</b><span><s>${rub(o.price)} ₽</s></span></div>
+      <em class="pl-save">−${Math.round((1 - o.keep / o.price) * 100)}%</em><b class="pl-p">${rub(o.keep)} ₽</b></button>`).join('')}</div>
+    <button class="btn ghost" data-act="sub-off" style="width:100%">Всё равно отключить</button>`);
+}
+async function keepSub(btn){
+  btn.disabled = true;
+  const { ok, data } = await post('/api/sub', { pid: cur.id, action: 'keep', plan: btn.dataset.plan }).catch(() => ({ ok:false, data:{} }));
+  btn.disabled = false;
+  if (!ok){
+    if (data.error === 'balance'){
+      const need = Math.max(data.need || 0, 50);
+      return openSheet(`<div class="done-box">${emo('💸')}<b>Не хватает ${rub(data.need)} ₽</b><p>Пополни баланс — и скидка будет ждать тебя здесь же</p>
+        <button class="btn" data-act="topup-need" data-need="${need}">Пополнить на ${rub(need)} ₽</button></div>`);
+    }
+    return toast(data.error === 'no_offer' ? 'Скидка уже использована' : 'Не получилось, попробуй ещё раз');
+  }
+  S.balance = data.balance; S.spent += data.order.sum; S.orders.unshift(data.order); S.subs[cur.id] = data.sub;
+  renderBalance(); renderProfileStats(); renderPlans(); renderBuybar();
+  try{ tg.HapticFeedback.notificationOccurred('success') }catch(e){}
+  openSheet(`<div class="done-box">${emo('🎉')}<b>Остаёшься с нами!</b><p>Подписка продлена со скидкой — доступ до ${fmtDate(data.sub.until)}</p>
+    <button class="btn" data-act="close-sheet" style="width:100%">Отлично</button></div>`);
+}
+async function subOff(btn){
+  btn.disabled = true;
+  const { ok, data } = await post('/api/sub', { pid: cur.id, action: 'auto_off', force: true }).catch(() => ({ ok:false, data:{} }));
+  btn.disabled = false;
+  if (!ok) return toast('Не получилось, попробуй ещё раз');
+  S.subs[cur.id] = data.sub; renderSubBox(); closeSheet();
+  toast(`Автопродление отключено. Доступ — до ${fmtDate(data.sub.until)}`, 'success');
+}
+const subDoneHtml = (s, title) => `<div class="done-box">${emo('🎉')}<b>${title}</b>
+    <p>Доступ до ${fmtDate(s.until)}. ${!s.link ? 'Ссылку для входа пришлю в чат с ботом.' : s.joined ? 'Ты уже в приватке — ничего делать не нужно.' : 'Жми «Войти» и отправь заявку — бот одобрит её сам.'}</p>
+    ${s.link ? `<button class="btn" data-url="${esc(s.link)}" style="width:100%">${s.joined ? 'Открыть приватку' : 'Войти в приватку'}</button>` : ''}
+    <button class="btn ghost" data-act="to-orders" style="width:100%;margin-top:10px">Мои покупки</button></div>`;
+
 /* ====== Отзывы ====== */
 const REV = {};
 const AVA_COLORS = ['#5b8def','#e0655b','#4cb782','#c27adf','#e3a33b','#3fb6c9','#e06b9a'];
@@ -789,6 +901,9 @@ function renderBuybar(){
     html = S.waits.has(p.id)
       ? `<button class="btn done" disabled>✓ ${s.soon ? 'Сообщим о старте' : 'Уведомим, когда появится'}</button>`
       : `<button class="btn bell" data-act="notify">${SVG.bell}${s.soon ? 'Сообщить о старте' : 'Уведомить о поступлении'}</button>`;
+  } else if (p.plans){
+    const sb = S.subs[p.id];
+    html = `<button class="btn" data-act="buy">${emo('🛍️')}${sb && sb.active ? 'Продлить' : 'Купить'} · ${rub(curTotal())} ₽</button>`;
   } else {
     html = `<div class="qty"><button data-q="-1" ${qty <= 1 ? 'disabled' : ''}>−</button><b>${qty}</b><button data-q="1" ${qty >= max ? 'disabled' : ''}>+</button></div>
       <button class="btn" data-act="buy">${emo('🛍️')}Купить · ${rub(p.price * qty)} ₽</button>`;
@@ -827,9 +942,9 @@ let promo = null;           // применённый промокод: { code, 
 const PROMO_ERR = { promo_bad:'Нет такого промокода', promo_used_up:'Этот промокод закончился', promo_again:'Ты уже использовал этот промокод',
   promo_pid:'Этот промокод на другой товар' };
 function openBuySheet(msg){
-  const p = cur, full = p.price * qty, total = promo ? promo.total : full, need = total - S.balance;
+  const p = cur, full = curTotal(), total = promo ? promo.total : full, need = total - S.balance;
   openSheet(`
-    <div class="bs-head">${picon(p, 'sm')}<div><b>${p.title}</b><span>${qty} шт · ${rub(full)} ₽</span></div></div>
+    <div class="bs-head">${picon(p, 'sm')}<div><b>${p.title}</b><span>${p.plans ? esc(curPlan().label) : qty + ' шт'} · ${rub(full)} ₽</span></div></div>
     <div class="promo"><input id="pr-code" placeholder="Есть промокод?" autocomplete="off" autocapitalize="characters" value="${promo ? esc(promo.code) : ''}"><button data-act="promo-apply">${promo ? 'Убрать' : 'Применить'}</button></div>
     <div class="promo-msg ${msg ? msg.cls : ''}">${msg ? msg.text : ''}</div>
     <div class="bs-rows"><div>На балансе<span>${rub(S.balance)} ₽</span></div>
@@ -844,7 +959,7 @@ async function applyPromo(btn){
   const code = $('#pr-code').value.trim();
   if (!code) return openBuySheet({ cls:'err', text:'Впиши промокод' });
   btn.disabled = true;
-  const { ok, data } = await post('/api/promo', { code, pid: cur.id, qty }).catch(() => ({ ok:false, data:{} }));
+  const { ok, data } = await post('/api/promo', { code, pid: cur.id, qty, plan: cur.plans ? curPlan().id : undefined }).catch(() => ({ ok:false, data:{} }));
   if (!ok) return openBuySheet({ cls:'err', text: PROMO_ERR[data.error] || 'Не получилось проверить промокод' });
   promo = { code: data.code, discount: data.discount, total: data.total, label: data.label };
   try{ tg.HapticFeedback.notificationOccurred('success') }catch(e){}
@@ -880,7 +995,8 @@ const linkify = t => esc(t).replace(/(https?:\/\/[^\s<]+|t\.me\/[^\s<]+)/g, u =>
 
 async function pay(btn){
   btn.disabled = true;
-  const { ok, data } = await post('/api/buy', { pid: cur.id, qty, promo: promo ? promo.code : undefined }).catch(() => ({ ok:false, data:{} }));
+  const wasActive = !!(S.subs[cur.id] && S.subs[cur.id].active);
+  const { ok, data } = await post('/api/buy', { pid: cur.id, qty, plan: cur.plans ? curPlan().id : undefined, promo: promo ? promo.code : undefined }).catch(() => ({ ok:false, data:{} }));
   btn.disabled = false;
   if (!ok){
     if (PROMO_ERR[data.error]){ promo = null; return openBuySheet({ cls:'err', text: PROMO_ERR[data.error] }); }
@@ -894,6 +1010,10 @@ async function pay(btn){
   if (REV[cur.id]) renderReviews(cur.id, false);
   if (cur.stocked){ S.stock[cur.id] = Math.max(0, (S.stock[cur.id] || 0) - qty); renderGrid(); }
   try{ tg.HapticFeedback.notificationOccurred('success') }catch(e){}
+  if (data.sub){
+    S.subs[cur.id] = data.sub; renderPlans(); renderBuybar();
+    return openSheet(subDoneHtml(data.sub, wasActive ? 'Подписка продлена' : 'Подписка оформлена'));
+  }
   if (data.ask) return openAskSheet(data.order, data.ask.intro, true);
   openSheet(`<div class="done-box">${emo('🎉')}<b>Заказ оплачен</b>
     <p>${data.order.items ? 'Доступ ниже и в чате с ботом' : 'Скоро пришлю доступ в чат с ботом — он же появится здесь, в «Покупках»'}</p>
@@ -1011,20 +1131,31 @@ function shareRef(){
 }
 
 /* ====== Покупки ====== */
+function subCards(){
+  return Object.values(S.subs || {}).filter(Boolean).map((s, i) => {
+    const p = PRODUCTS.find(x => x.id === s.pid) || { emo:'🔐', title:'Подписка' };
+    return `<div class="ord" style="animation-delay:${i*40}ms">
+      <div class="ord-top">${picon(p, 'sm')}<div class="ord-t"><b>${esc(p.title)}</b><span>${s.active ? `до ${fmtDate(s.until)} · автопродление ${s.auto ? 'вкл' : 'выкл'}` : `закончилась ${fmtDate(s.until)}`}</span></div>
+      <span class="ost ${s.active ? 'done' : 'end'}">${s.active ? 'Активна' : 'Закончилась'}</span></div>
+      <div class="subst-btns">${s.active && s.link ? `<button class="btn" data-url="${esc(s.link)}">${s.joined ? 'Открыть приватку' : 'Войти в приватку'}</button>` : ''}
+      <button class="btn ghost" data-act="sub-manage" data-pid="${esc(s.pid)}">${s.active ? 'Управлять подпиской' : 'Продлить'}</button></div>
+    </div>`;
+  }).join('');
+}
 function renderOrders(){
-  const n = S.orders.length;
+  const n = S.orders.length, sc = subCards();
   const head = `<div class="ord-head"><div><h1>Покупки</h1><p>${n ? `${n} ${plural(n, ['заказ','заказа','заказов'])}` : 'Здесь будут ваши покупки'}</p></div>${emo('🛍️')}</div>`;
   if (!n){
-    const rec = PRODUCTS.filter(p => p.price != null && !stockInfo(p).off).slice(0, 4);
-    return setHTML($('#v-orders'), head + `<div class="sec">Советуем начать с</div>
+    const rec = PRODUCTS.filter(p => p.price != null && !stockInfo(p).off && !S.hidden.has(p.id)).slice(0, 4);
+    return setHTML($('#v-orders'), head + sc + `<div class="sec">Советуем начать с</div>
       <div class="grid">${rec.map((p, i) => card({ ...p, wide:false }, i)).join('')}</div>
       <div class="center"><button class="btn" data-go="shop">В магазин</button></div>`);
   }
-  setHTML($('#v-orders'), head + S.orders.map((o, i) => {
+  setHTML($('#v-orders'), head + (sc ? sc + `<div class="sec">История покупок</div>` : '') + S.orders.map((o, i) => {
     const p = PRODUCTS.find(x => x.id === o.pid) || { emo:'🛍️' };
     return `<div class="ord" style="animation-delay:${i*40}ms">
       <div class="ord-top">${picon(p, 'sm')}<div class="ord-t"><b>${esc(o.title)}${o.qty > 1 ? ' × ' + o.qty : ''}</b><span>${new Date(o.ts).toLocaleDateString('ru-RU')} · ${rub(o.sum)} ₽${o.promo ? ` · промокод ${esc(o.promo)}` : ''}</span></div>
-      <span class="ost ${o.status}">${o.status === 'done' ? 'Выдан' : 'В работе'}</span></div>
+      <span class="ost ${o.status}">${o.status === 'done' ? (o.sub ? 'Оплачен' : 'Выдан') : 'В работе'}</span></div>
       ${o.items ? `<div class="ord-items">${o.items.map(x => `<button class="code" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}
       ${o.note ? `<div class="ord-note">${linkify(o.note)}</div>` : ''}
       ${o.ask ? `<button class="btn" data-act="ask-open" data-oid="${esc(o.id)}">📝 Заполнить анкету</button>`
@@ -1159,10 +1290,10 @@ function applyProfile(d){
   if (d.status){ $('#p-status').src = `${CONFIG.api}/api/emoji/${d.status}`; $('#p-status').hidden = false; }
   S.balance = d.balance || 0; S.orders = d.orders || []; S.pending = d.pending || []; S.spent = d.spent || 0;
   S.refs = d.refs || 0; S.refIncome = d.refIncome || 0; S.refPct = d.refPct || 10; S.refLink = d.refLink || '';
-  S.waits = new Set(d.waits || []); S.reviewed = new Set(d.reviewed || []);
+  S.waits = new Set(d.waits || []); S.reviewed = new Set(d.reviewed || []); S.subs = d.subs || {};
   $('#p-ref-pct').textContent = S.refPct;
   $('#p-ref-s').textContent = `${S.refs} ${plural(S.refs, ['друг','друга','друзей'])} · доход ${rub(S.refIncome)} ₽`;
-  if (sub === 'product' && cur){ renderBuybar(); if (REV[cur.id]) renderReviews(cur.id, false); }
+  if (sub === 'product' && cur){ if (cur.plans) renderPlans(); renderBuybar(); if (REV[cur.id]) renderReviews(cur.id, false); }
   renderBalance(); renderProfileStats();
   if (d.reg){
     const days = Math.floor((Date.now() - d.reg) / 86400000);
@@ -1182,9 +1313,14 @@ async function loadCatalog(){
     const d = await (await fetch(CONFIG.api + '/api/catalog')).json();
     S.stock = d.stock || {}; S.methods = d.methods || S.methods; S.off = new Set(d.off || []); S.ratings = d.ratings || {};
     // цены, которые ты поменял командой /price в боте
-    for (const p of PRODUCTS) if (d.prices && p.id in d.prices) p.price = d.prices[p.id];
+    // и скрытые товары, и периоды подписки — тоже из бота (/hide, /show, /price privplus m3 …)
+    if (d.hidden) S.hidden = new Set(d.hidden);
+    for (const p of PRODUCTS){
+      if (d.prices && p.id in d.prices) p.price = d.prices[p.id];
+      if (d.plans && d.plans[p.id]) p.plans = d.plans[p.id];
+    }
     renderGrid();
-    if (sub === 'product' && cur) renderBuybar();
+    if (sub === 'product' && cur){ if (cur.plans) renderPlans(); renderBuybar(); }
   }catch(e){}
 }
 function fillAvatar(el){
@@ -1215,6 +1351,12 @@ document.addEventListener('click', e => {
     if (g.dataset.go === 'profile') requestAnimationFrame(drawPattern);
     return;
   }
+  const pl = t.closest('#plans [data-plan]');
+  if (pl){
+    plan = pl.dataset.plan; promo = null; tap('soft');
+    $$('#plans .plan').forEach(b => b.classList.toggle('on', b === pl));
+    return renderBuybar();
+  }
   const act = t.closest('[data-act]');
   if (act){
     const a = act.dataset.act;
@@ -1239,6 +1381,11 @@ document.addEventListener('click', e => {
     if (a === 'review-send') return sendReview(act);
     if (a === 'rv-all') return renderReviews(cur.id, true);
     if (a === 'ask-send') return sendAnswers(act);
+    if (a === 'sub-auto') return toggleAuto(act);
+    if (a === 'sub-keep') return keepSub(act);
+    if (a === 'sub-off') return subOff(act);
+    if (a === 'sub-manage'){ const sp = PRODUCTS.find(x => x.id === act.dataset.pid); if (sp){ tap(); openProduct(sp); } return; }
+    if (a === 'close-sheet') return closeSheet();
     if (a === 'ask-open'){ const o = S.orders.find(x => x.id === act.dataset.oid); if (o){ tap(); openAskSheet(o, '', false); } return; }
     if (a === 'ref'){ tap(); return openRef(); }
     if (a === 'ref-share'){ tap('medium'); return shareRef(); }
@@ -1273,7 +1420,7 @@ $('#b-snow').addEventListener('click', () => {
 /* ====== Старт ====== */
 function route(key, push){
   const p = PRODUCTS.find(x => x.id === key);
-  if (p) return openProduct(p, push);
+  if (p && !S.hidden.has(p.id)) return openProduct(p, push);
   if (key === 'topup') return openTopup();
   if (key === 'transfer') return openTransfer();
   if (key === 'ref') return openRef();
