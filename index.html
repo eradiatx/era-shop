@@ -362,6 +362,9 @@ button{cursor:pointer}
 .subst-btns .btn.ghost{background:var(--card-2)}
 .ost.end{background:rgba(255,255,255,.08);color:var(--muted)}
 .keep{display:grid;gap:0;margin:4px 0 6px}
+.card-pay{margin:6px 0 0}
+.card-pay .method{margin-bottom:6px}
+.card-pay p{color:var(--dim);font-size:12.5px;line-height:1.45;margin:0 6px}
 
 /* ---------- анкета после оплаты и выданные заказы ---------- */
 .aqs{display:grid;gap:10px;margin:4px 0 14px}
@@ -513,6 +516,8 @@ const PRODUCTS = [
   // подписка: периоды и цены приходят из бота (/api/catalog), здесь — значения по умолчанию
   {id:'privplus', cat:'private', wide:true, emo:'👑', badge:'NEW', title:'Приватка Plus', price:1299, unit:'/мес',
    plans:[{id:'m1', label:'1 месяц', months:1, price:1299}, {id:'m3', label:'3 месяца', months:3, price:2999}, {id:'y1', label:'1 год', months:12, price:12999}],
+   // оплата картой — подписка через Tribute (свой бот, свои периоды и продление); показываем тем, у кого нет подписки через баланс
+   card:'https://web.tribute.tg/s/1cpN',
    blocks:[
      ['💎','Что внутри','Приватный канал CONTENT ROOM: скиллы для Claude, разборы роликов, идеи с готовым хуком и реальные способы заработать на контенте.'],
      ['🐥','Как попасть','После оплаты бот пришлёт ссылку — жмёшь «Вступить», и заявку одобрят автоматически.'],
@@ -578,6 +583,7 @@ const ICONS = {
 let icoN = 0;
 const logo = k => { const n = ++icoN; return ICONS[k].replace(/id="(\w+)"/g, `id="$1${n}"`).replace(/url\(#(\w+)\)/g, `url(#$1${n})`); };
 const SVG = {
+  card:`<svg viewBox="0 0 40 40"><rect x="3" y="8" width="34" height="24" rx="5" fill="#3a3a42"/><rect x="3" y="13.5" width="34" height="5" fill="#141417"/><rect x="8" y="23.5" width="9" height="4.5" rx="1.5" fill="#f2c94c"/><circle cx="28" cy="25.8" r="3" fill="#eb5757"/><circle cx="31.5" cy="25.8" r="3" fill="#f2994a" fill-opacity=".85"/></svg>`,
   box:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>`,
   back:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>`,
   chev:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>`,
@@ -796,8 +802,16 @@ function renderPlans(){
     return `<button class="plan ${x.id === plan ? 'on' : ''}" data-plan="${x.id}"><span class="pl-r"></span>
       <div class="pl-t"><b>${esc(x.label)}</b><span>${x.months > 1 ? `${rub(Math.round(x.price / x.months))} ₽ в месяц` : 'помесячно'}</span></div>
       ${save > 0 ? `<em class="pl-save">−${save}%</em>` : ''}<b class="pl-p">${rub(x.price)} ₽</b></button>`;
-  }).join(''));
+  }).join('') + cardPayHtml());
   renderSubBox();
+}
+// оплата картой через Tribute — только если подписки через баланс нет (иначе продление с баланса, чтобы не было двух подписок)
+function cardPayHtml(){
+  const s = S.subs[cur.id];
+  if (!cur.card || (s && s.active)) return '';
+  return `<div class="card-pay"><button class="method" data-url="${esc(cur.card)}"><span class="m-ico">${SVG.card}</span>
+      <div><b>Оплатить картой</b><span>Карты РФ и зарубежные — через Tribute</span></div>${SVG.chev}</button>
+    <p>Те же периоды и цены. Доступ в канал и продление — в боте Tribute.</p></div>`;
 }
 function renderSubBox(){
   const box = $('#subbox');
@@ -964,7 +978,8 @@ function openBuySheet(msg){
       ${promo ? `<div class="disc">Скидка ${esc(promo.label)}<span>−${rub(promo.discount)} ₽</span></div>` : ''}
       <div>К оплате<span>${promo ? `<s>${rub(full)} ₽</s>` : ''}${rub(total)} ₽</span></div></div>
     ${need > 0
-      ? `<p class="bs-warn">Не хватает ${rub(need)} ₽</p><button class="btn" data-act="topup-need" data-need="${Math.max(need, 50)}">Пополнить на ${rub(Math.max(need, 50))} ₽</button>`
+      ? `<p class="bs-warn">Не хватает ${rub(need)} ₽</p><button class="btn" data-act="topup-need" data-need="${Math.max(need, 50)}">Пополнить на ${rub(Math.max(need, 50))} ₽</button>` +
+        (p.plans && cardPayHtml() ? `<button class="btn ghost" data-url="${esc(p.card)}" style="width:100%;margin-top:10px">Оплатить картой через Tribute</button>` : '')
       : `<button class="btn" data-act="pay">${emo('💸')}Оплатить ${rub(total)} ₽</button>`}`);
 }
 async function applyPromo(btn){
