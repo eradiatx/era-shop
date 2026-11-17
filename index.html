@@ -583,6 +583,13 @@ const PRODUCTS = [
      ['📝','Как работаем','Пришли тему ролика, кадр или фото и пример, который нравится → делаю превью → одна правка бесплатно.'],
      ['⏳','Сроки','До 1 дня.'],
    ]},
+  // бесплатно, но только по промокоду (его выкладываешь в канал); один раз на человека
+  {id:'freepack', cat:'packs', emo:'🥳', badge:'FREE', promoOnly:true, title:'Бесплатный мини-пак', short:'Мини-пак', price:0,
+   blocks:[
+     ['💎','Что внутри','Несколько шаблонов сценариев и хуков из большого пака — попробуй бесплатно, как это работает.'],
+     ['🔑','Как получить','Нажми «Получить бесплатно» и введи промокод — он есть в моём Telegram-канале. Один раз на человека.'],
+     ['🐥','Что дальше','Пак придёт в чат с ботом и останется в «Покупках».'],
+   ]},
   {id:'scriptpack', cat:'packs', emo:'📚', badge:'NEW', title:'Пак сценариев', price:990,
    blocks:[
      ['💎','Что внутри','Готовые сценарии и шаблоны в разных форматах: быстрые шортсы, длинные ролики-эссе, листиклы и топы.'],
@@ -746,7 +753,7 @@ function stockInfo(p){
   if (n <= 0) return { txt:'нет в наличии', pct:0, off:true, oos:true };
   return { txt:`${n} шт`, pct: Math.min(100, n * 5), low: n <= 3 };
 }
-const priceHtml = p => p.price == null ? 'скоро' : `${p.from ? '<small>от</small>' : ''}${rub(p.price)}<i>₽${p.unit || ''}</i>`;
+const priceHtml = p => p.price == null ? 'скоро' : p.price === 0 ? 'Бесплатно' : `${p.from ? '<small>от</small>' : ''}${rub(p.price)}<i>₽${p.unit || ''}</i>`;
 
 function card(p, i){
   const s = stockInfo(p);
@@ -841,7 +848,7 @@ function openProduct(p, push = true){
   setHTML($('#v-product'), `${backBtn()}
     <div class="pp-cover">${picon(p, 'huge')}</div>
     <div class="pp-head">${picon(p, 'sm')}<h1>${p.title}</h1></div>
-    <div class="pp-price"><b>${p.price == null ? 'скоро' : (p.from ? 'от ' : '') + rub(p.price) + ' ₽' + (p.unit || '')}</b>${chip}</div>
+    <div class="pp-price"><b>${p.price == null ? 'скоро' : p.price === 0 ? 'Бесплатно' : (p.from ? 'от ' : '') + rub(p.price) + ' ₽' + (p.unit || '')}</b>${chip}</div>
     ${p.blocks.map(([e, l, t]) => `<div class="blk">${emo(e)}<b>${l}:</b> ${t}</div>`).join('')}
     ${p.plans ? `<div id="subbox"></div><div class="plans" id="plans"></div>` : ''}
     ${p.price == null ? '' : `<div class="rv" id="rv"><div class="rv-head"><b>Отзывы</b><span id="rv-sum"></span></div><div id="rv-list"><div class="rv-empty">Загружаю отзывы…</div></div><div id="rv-cta"></div></div>`}`);
@@ -988,6 +995,10 @@ function renderBuybar(){
     html = S.waits.has(p.id)
       ? `<button class="btn done" disabled>✓ ${s.soon ? 'Сообщим о старте' : 'Уведомим, когда появится'}</button>`
       : `<button class="btn bell" data-act="notify">${SVG.bell}${s.soon ? 'Сообщить о старте' : 'Уведомить о поступлении'}</button>`;
+  } else if (p.promoOnly){
+    html = S.orders.some(o => o.pid === p.id)
+      ? `<button class="btn done" data-act="to-orders">✓ Уже получен — в «Покупках»</button>`
+      : `<button class="btn" data-act="buy">${emo('✨')}Получить бесплатно</button>`;
   } else if (p.plans){
     const sb = S.subs[p.id];
     html = `<button class="btn" data-act="buy">${emo('🛍️')}${sb && sb.active ? 'Продлить' : 'Купить'} · ${rub(curTotal())} ₽</button>`;
@@ -1027,8 +1038,15 @@ $('#sheet').addEventListener('touchend', e => {
 /* ====== Покупка с баланса ====== */
 let promo = null;           // применённый промокод: { code, discount, total, label }
 const PROMO_ERR = { promo_bad:'Нет такого промокода', promo_used_up:'Этот промокод закончился', promo_again:'Ты уже использовал этот промокод',
-  promo_pid:'Этот промокод на другой товар' };
+  promo_pid:'Этот промокод на другой товар', promo_required:'Введи промокод', already:'Ты уже получил этот пак — он в «Покупках»' };
 function openBuySheet(msg){
+  // бесплатный пак: только поле промокода и «Получить»
+  if (cur.promoOnly) return openSheet(`
+    <div class="bs-head">${picon(cur, 'sm')}<div><b>${cur.title}</b><span>Бесплатно по промокоду</span></div></div>
+    <div class="promo"><input id="pr-code" placeholder="Промокод из канала" autocomplete="off" autocapitalize="characters" value="${promo ? esc(promo.code) : ''}"><button data-act="promo-apply">${promo ? 'Убрать' : 'Применить'}</button></div>
+    <div class="promo-msg ${msg ? msg.cls : ''}">${msg ? msg.text : 'Промокод есть в моём Telegram-канале'}</div>
+    ${promo ? `<button class="btn" data-act="pay">${emo('✨')}Получить бесплатно</button>`
+      : `<button class="btn ghost" data-link="channel" style="width:100%">Найти промокод в канале</button>`}`);
   const p = cur, full = curTotal(), total = promo ? promo.total : full, need = total - S.balance;
   openSheet(`
     <div class="bs-head">${picon(p, 'sm')}<div><b>${p.title}</b><span>${p.plans ? esc(curPlan().label) : qty + ' шт'} · ${rub(full)} ₽</span></div></div>
@@ -1051,7 +1069,7 @@ async function applyPromo(btn){
   if (!ok) return openBuySheet({ cls:'err', text: PROMO_ERR[data.error] || 'Не получилось проверить промокод' });
   promo = { code: data.code, discount: data.discount, total: data.total, label: data.label };
   try{ tg.HapticFeedback.notificationOccurred('success') }catch(e){}
-  openBuySheet({ cls:'ok', text:`Промокод применён: ${data.label}` });
+  openBuySheet({ cls:'ok', text: cur.promoOnly ? 'Промокод принят — забирай пак' : `Промокод применён: ${data.label}` });
 }
 /* ====== Анкета после оплаты (Claude, консультация, бриф) ====== */
 function openAskSheet(order, intro, justPaid){
@@ -1103,6 +1121,15 @@ async function pay(btn){
     return openSheet(subDoneHtml(data.sub, wasActive ? 'Подписка продлена' : 'Подписка оформлена'));
   }
   if (data.ask) return openAskSheet(data.order, data.ask.intro, true);
+  renderBuybar();
+  // пак отправлен ботом сам (автовыдача /pack)
+  if (data.order.status === 'done' && !data.order.items) return openSheet(`<div class="done-box">${emo('🎉')}<b>${cur.promoOnly ? 'Пак твой!' : 'Готово!'}</b>
+    <p>Отправил его в чат с ботом — он там и останется</p>
+    <button class="btn" data-url="https://t.me/eradiat_shop_bot" style="width:100%">Открыть чат с ботом</button>
+    <button class="btn ghost" data-act="to-orders" style="width:100%;margin-top:10px">Мои покупки</button></div>`);
+  if (cur.promoOnly) return openSheet(`<div class="done-box">${emo('🎉')}<b>Пак твой!</b>
+    <p>Скоро пришлю его в чат с ботом — он же появится здесь, в «Покупках»</p>
+    <button class="btn" data-act="to-orders">Мои покупки</button></div>`);
   openSheet(`<div class="done-box">${emo('🎉')}<b>Заказ оплачен</b>
     <p>${data.order.items ? 'Доступ ниже и в чате с ботом' : 'Скоро пришлю доступ в чат с ботом — он же появится здесь, в «Покупках»'}</p>
     ${data.order.items ? `<div class="ord-items" style="margin-bottom:16px">${data.order.items.map(x => `<button class="code" data-copy="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : ''}
