@@ -542,9 +542,10 @@ const PRODUCTS = [
      ['🚀','Как работаем','Короткий бриф → показываю демо → дорабатываю под тебя → запускаю на сервере.'],
      ['⏳','Сроки','Обычно 3–7 дней, точнее скажу после брифа.'],
    ]},
-  {id:'edit', cat:'services', emo:'🎬', title:'Монтаж ролика под ключ', short:'Монтаж ролика', price:2990, unit:'/ролик',
+  {id:'edit', cat:'services', emo:'🎬', title:'Монтаж ролика под ключ', short:'Монтаж ролика', price:990, from:true, unit:'/ролик',
    blocks:[
-     ['💎','Что входит','Монтаж рилса или шортса до 60 секунд: нарезка без пауз, субтитры, графика и музыка в одном из моих стилей.'],
+     ['💎','Что входит','Монтаж рилса или шортса: нарезка без пауз, субтитры, графика и музыка в одном из моих стилей.'],
+     ['❗','Цена','От 990 ₽ за ролик — итог зависит от длины и сложности монтажа. Если работы больше, сумму доплаты согласуем до старта.'],
      ['📝','Как работаем','Присылаешь исходники и задачу → монтирую → одна-две правки бесплатно.'],
      ['⏳','Сроки','1–3 дня в зависимости от сложности.'],
    ]},
@@ -704,7 +705,7 @@ function stockInfo(p){
   if (n <= 0) return { txt:'нет в наличии', pct:0, off:true, oos:true };
   return { txt:`${n} шт`, pct: Math.min(100, n * 5), low: n <= 3 };
 }
-const priceHtml = p => p.price == null ? 'скоро' : `${rub(p.price)}<i>₽${p.unit || ''}</i>`;
+const priceHtml = p => p.price == null ? 'скоро' : `${p.from ? '<small>от</small>' : ''}${rub(p.price)}<i>₽${p.unit || ''}</i>`;
 
 function card(p, i){
   const s = stockInfo(p);
@@ -799,7 +800,7 @@ function openProduct(p, push = true){
   setHTML($('#v-product'), `${backBtn()}
     <div class="pp-cover">${picon(p, 'huge')}</div>
     <div class="pp-head">${picon(p, 'sm')}<h1>${p.title}</h1></div>
-    <div class="pp-price"><b>${p.price == null ? 'скоро' : rub(p.price) + ' ₽' + (p.unit || '')}</b>${chip}</div>
+    <div class="pp-price"><b>${p.price == null ? 'скоро' : (p.from ? 'от ' : '') + rub(p.price) + ' ₽' + (p.unit || '')}</b>${chip}</div>
     ${p.blocks.map(([e, l, t]) => `<div class="blk">${emo(e)}<b>${l}:</b> ${t}</div>`).join('')}
     ${p.plans ? `<div id="subbox"></div><div class="plans" id="plans"></div>` : ''}
     ${p.price == null ? '' : `<div class="rv" id="rv"><div class="rv-head"><b>Отзывы</b><span id="rv-sum"></span></div><div id="rv-list"><div class="rv-empty">Загружаю отзывы…</div></div><div id="rv-cta"></div></div>`}`);
