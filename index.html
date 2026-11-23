@@ -1407,6 +1407,7 @@ function applyProfile(d, fromCache){
   S.balance = d.balance || 0; S.orders = d.orders || []; S.pending = d.pending || []; S.spent = d.spent || 0;
   S.refs = d.refs || 0; S.refIncome = d.refIncome || 0; S.refPct = d.refPct || 10; S.refLink = d.refLink || '';
   S.waits = new Set(d.waits || []); S.reviewed = new Set(d.reviewed || []); S.subs = d.subs || {};
+  S.sbpMine = !!d.sbp && !fromCache; if (S.sbpMine) S.methods.sbp = true;   // тестовая оплата видна только владельцу
   $('#p-ref-pct').textContent = S.refPct;
   $('#p-ref-s').textContent = `${S.refs} ${plural(S.refs, ['друг','друга','друзей'])} · доход ${rub(S.refIncome)} ₽`;
   if (sub === 'product' && cur){ if (cur.plans) renderPlans(); renderBuybar(); if (REV[cur.id]) renderReviews(cur.id, false); }
@@ -1427,7 +1428,7 @@ async function loadProfile(){
 async function loadCatalog(){
   try{
     const d = await (await fetch(CONFIG.api + '/api/catalog')).json();
-    S.stock = d.stock || {}; S.methods = d.methods || S.methods; S.off = new Set(d.off || []); S.ratings = d.ratings || {};
+    S.stock = d.stock || {}; S.methods = { ...(d.methods || S.methods) }; if (S.sbpMine) S.methods.sbp = true; S.off = new Set(d.off || []); S.ratings = d.ratings || {};
     // цены, которые ты поменял командой /price в боте
     // и скрытые товары, и периоды подписки — тоже из бота (/hide, /show, /price privplus m3 …)
     if (d.hidden) S.hidden = new Set(d.hidden);
